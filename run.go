@@ -2,6 +2,7 @@ package hekaservicetags
 
 import (
 	"github.com/mozilla-services/heka/message"
+	"github.com/mozilla-services/heka/pipeline"
 )
 
 type tags struct {
@@ -20,7 +21,7 @@ func (*tags) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) err
 
 }
 func init() {
-	RegisterPlugin("ServiceTagger", func() interface{} {
+	pipeline.RegisterPlugin("ServiceTagger", func() interface{} {
 		return &tags{}
 	})
 }
