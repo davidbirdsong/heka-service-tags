@@ -17,7 +17,7 @@ func (*ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.Pl
 
 	for pack := range runner.InChan() {
 		message.NewStringField(pack.Message, "foo", "bar")
-		message.NewIntField(pack.Message, "servicetagger", 1)
+		message.NewIntField(pack.Message, "servicetagger", 1, "")
 		runner.Inject(pack)
 		//pack.Recycle()
 
