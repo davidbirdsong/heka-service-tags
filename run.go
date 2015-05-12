@@ -5,11 +5,11 @@ import (
 	"github.com/mozilla-services/heka/pipeline"
 )
 
-type tags struct {
+type ServiceTaggerFilter struct {
 	f int64
 }
 
-func (*tags) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
+func (*ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
 
 	for pack := range runner.InChan() {
 		message.NewStringField(pack.Message, "foo", "bar")
@@ -21,7 +21,7 @@ func (*tags) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) err
 
 }
 func init() {
-	pipeline.RegisterPlugin("ServiceTagger", func() interface{} {
-		return &tags{}
+	pipeline.RegisterPlugin("ServiceTaggerFilter", func() interface{} {
+		return new(ServiceTaggerFilter)
 	})
 }
