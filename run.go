@@ -9,6 +9,10 @@ type ServiceTaggerFilter struct {
 	f int64
 }
 
+func (*ServiceTaggerFilter) Init(config interface{}) error {
+	return nil
+}
+
 func (*ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
 
 	for pack := range runner.InChan() {
