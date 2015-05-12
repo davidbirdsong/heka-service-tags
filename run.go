@@ -16,9 +16,13 @@ func (*ServiceTaggerFilter) Init(config interface{}) error {
 func (*ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
 
 	for pack := range runner.InChan() {
+		pipeline.LogError(fmt.Errorf("in"))
 		message.NewStringField(pack.Message, "foo", "bar")
 		message.NewIntField(pack.Message, "servicetagger", 1, "")
-		runner.Inject(pack)
+		if !runner.Inject(pack) {
+			pipeline.LogError(fmt.Errorf("failed to inject"))
+		}
+
 		//pack.Recycle()
 
 	}
