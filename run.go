@@ -1,6 +1,7 @@
 package hekaservicetags
 
 import (
+	"fmt"
 	"github.com/mozilla-services/heka/message"
 	"github.com/mozilla-services/heka/pipeline"
 )
