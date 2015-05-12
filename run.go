@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/mozilla-services/heka/message"
 	"github.com/mozilla-services/heka/pipeline"
-	"sync"
 )
 
 type ServiceTaggerFilter struct {
@@ -22,7 +21,7 @@ func (t *ServiceTaggerFilter) update() error {
 
 func (t *ServiceTaggerFilter) Init(config interface{}) error {
 	var err error
-	client, err = api.NewClient(api.DefaultConfig())
+	t.client, err = api.NewClient(api.DefaultConfig())
 	return err
 }
 
