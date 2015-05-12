@@ -19,9 +19,15 @@ func (*tags) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) err
 
 	for pack := range runner.InChan() {
 		message.NewStringField(pack.Message, "foo", "bar")
-		pack.Recycle()
+		runner.Inject(pack)
+		//pack.Recycle()
 
 	}
 	return nil
 
+}
+func init() {
+	RegisterPlugin("ServiceTagger", func() interface{} {
+		return &tags{}
+	})
 }
