@@ -55,7 +55,7 @@ func (t *ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.
 			}
 		case <-runner.Ticker():
 			t.update()
-			runner.LogError(fmt.Errorf("updating")
+			runner.LogError(fmt.Errorf("updating"))
 
 			//pack.Recycle()
 
