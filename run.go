@@ -2,34 +2,69 @@ package hekaservicetags
 
 import (
 	"fmt"
+	"github.com/hashicorp/consul/api"
 	"github.com/mozilla-services/heka/message"
 	"github.com/mozilla-services/heka/pipeline"
+	"sync"
 )
 
 type ServiceTaggerFilter struct {
-	f int64
+	f        int64
+	client   *api.Client
+	services map[string]*api.AgentService
 }
 
-func (*ServiceTaggerFilter) Init(config interface{}) error {
-	return nil
+func (t *ServiceTaggerFilter) update() error {
+	var err error
+	t.services, err = t.client.Agent().Services()
+	return err
 }
 
-func (*ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
+func (t *ServiceTaggerFilter) Init(config interface{}) error {
+	var err error
+	client, err = api.NewClient(api.DefaultConfig())
+	return err
+}
 
-	for pack := range runner.InChan() {
-		runner.LogError(fmt.Errorf("in"))
-		message.NewStringField(pack.Message, "foo", "bar")
-		message.NewIntField(pack.Message, "servicetagger", 1, "")
-		if !runner.Inject(pack) {
-			runner.LogError(fmt.Errorf("failed to inject"))
+func (t *ServiceTaggerFilter) writeMessage(m *message.Message) {
+	f := message.NewFieldInit("ServiceTagger", message.Field_STRING, "")
+
+	for _, agentS := range t.services {
+		f.AddValue(agentS.Service)
+		/*
+			for _, t := range agentS.Tags {
+				message.NewStringField(m, strings.Join([]string{agentS.Service, t}, "="))
+			}
+		*/
+	}
+	m.AddField(f)
+	message.NewIntField(m, "_servicetagger", 1, "")
+}
+
+func (t *ServiceTaggerFilter) Run(runner pipeline.FilterRunner, helper pipeline.PluginHelper) error {
+	var (
+		pack    *pipeline.PipelinePack
+		running bool
+	)
+	running = true
+	for running {
+		select {
+		case pack, running = <-runner.InChan():
+			t.writeMessage(pack.Message)
+			if !runner.Inject(pack) {
+				runner.LogError(fmt.Errorf("failed to inject"))
+			}
+		case <-runner.Ticker():
+			t.update()
+
+			//pack.Recycle()
+
 		}
-
-		//pack.Recycle()
-
 	}
 	return nil
 
 }
+
 func init() {
 	pipeline.RegisterPlugin("ServiceTaggerFilter", func() interface{} {
 		return new(ServiceTaggerFilter)
