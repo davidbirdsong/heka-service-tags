@@ -1,14 +1,7 @@
 package hekaservicetags
 
 import (
-	"code.google.com/p/go-uuid/uuid"
-	"fmt"
-	//"github.com/mozilla-services/heka/client"
 	"github.com/mozilla-services/heka/message"
-	"log"
-	"net/url"
-	"os"
-	"time"
 )
 
 type tags struct {
